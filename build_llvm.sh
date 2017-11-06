@@ -4,33 +4,35 @@ set -exv
 # location where clang should be installed
 LLVM_RELEASE=5.0.0
 INSTALL_PREFIX=/home/jshi/bin64/llvm-${LLVM_RELEASE}
+export PATH=/opt/python/cp27-cp27mu/bin:$PATH:/home/jshi/bin64/cmake-3.9.5/bin
 # location of gcc used to build clang
 #HOST_GCC=/home/jshi/bin64/gcc4.9.1
-HOST_GCC=
+HOST_GCC=/opt/rh/devtoolset-2/root/usr
 # number of cores
-CPUS=2
+CPUS=1
 # uncomment following to get verbose output from make
 #VERBOSE=VERBOSE=1
 # uncomment following if you need to sudo in order to do the install
 #SUDO=sudo
 
-
 mkdir -p llvm-${LLVM_RELEASE}
 cd llvm-${LLVM_RELEASE}
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/llvm-${LLVM_RELEASE}.src.tar.xz"
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/cfe-${LLVM_RELEASE}.src.tar.xz"
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/compiler-rt-${LLVM_RELEASE}.src.tar.xz"
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/libcxx-${LLVM_RELEASE}.src.tar.xz"
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/libcxxabi-${LLVM_RELEASE}.src.tar.xz"
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/libunwind-${LLVM_RELEASE}.src.tar.xz"
-curl -O "https://llvm.org/releases/${LLVM_RELEASE}/lld-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/llvm-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/cfe-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/compiler-rt-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/libcxx-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/libcxxabi-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/libunwind-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/lld-${LLVM_RELEASE}.src.tar.xz"
 if [[ ${ENABLE_LLDB} == true ]]; then
-    curl -O "http://llvm.org/releases/${LLVM_RELEASE}/lldb-${LLVM_RELEASE}.src.tar.xz"
+    curl -O "https://releases.llvm.org/${LLVM_RELEASE}/lldb-${LLVM_RELEASE}.src.tar.xz"
 fi
-curl -O "http://llvm.org/releases/${LLVM_RELEASE}/openmp-${LLVM_RELEASE}.src.tar.xz"
-curl -O "http://llvm.org/releases/${LLVM_RELEASE}/clang-tools-extra-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/openmp-${LLVM_RELEASE}.src.tar.xz"
+curl -O "https://releases.llvm.org/${LLVM_RELEASE}/clang-tools-extra-${LLVM_RELEASE}.src.tar.xz"
 
-for i in $(ls *.xz); do tar xf $i;done
+for i in $(ls *.xz); do unxz $i;done
+for i in $(ls *.tar); do tar xf $i;done
+#for i in $(ls *.xz); do tar xf $i;done
 
 mv cfe-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/tools/clang
 mv compiler-rt-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/projects/compiler-rt
@@ -67,7 +69,8 @@ cmake -D_GLIBCXX_USE_CXX11_ABI=0 \
         -DCMAKE_BUILD_TYPE="Release" \
         -DLLVM_TARGETS_TO_BUILD="X86" \
         -DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON \
-        -DLLVM_ENABLE_LIBCXX=ON ../llvm
+        -DLLVM_ENABLE_LIBCXX=ON \
+        ../llvm-${LLVM_RELEASE}.src
 
 make -j ${CPUS} ${VERBOSE}
 

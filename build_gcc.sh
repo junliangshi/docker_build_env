@@ -3,7 +3,7 @@
 set -e
 
 if [[ -z "$TOOLCHAIN_DIR" ]]; then
-	TOOLCHAIN_DIR=/home/jshi/gcc-7.2
+	TOOLCHAIN_DIR=/home/jshi/bin64/gcc-7.2
 fi
 
 GMP_VER=6.1.2
@@ -61,7 +61,11 @@ curl "https://ftp.gnu.org/gnu/mpc/${FILE}" -o "$FILE"
 tar -xf "$FILE"
 rm "$FILE"
 cd "mpc-${MPC_VER}"
-./configure --prefix="$TOOLCHAIN_DIR" --disable-dependency-tracking --with-gmp="$TOOLCHAIN_DIR" --with-mpfr="$TOOLCHAIN_DIR"
+./configure --prefix="$TOOLCHAIN_DIR" \
+            --disable-dependency-tracking \
+            --with-gmp="$TOOLCHAIN_DIR" \
+            --with-mpfr="$TOOLCHAIN_DIR"
+
 make
 make check
 make install
@@ -74,7 +78,12 @@ curl "http://isl.gforge.inria.fr/${FILE}" -o "$FILE"
 tar -xf "$FILE"
 rm "$FILE"
 cd "isl-${ISL_VER}"
-./configure --disable-dependency-tracking --disable-silent-rules --prefix="$TOOLCHAIN_DIR" --with-gmp=system --with-gmp-prefix="$TOOLCHAIN_DIR"
+./configure --disable-dependency-tracking \
+            --disable-silent-rules \
+            --prefix="$TOOLCHAIN_DIR" \
+            --with-gmp=system \
+            --with-gmp-prefix="$TOOLCHAIN_DIR"
+
 make check
 make install
 cd ..
@@ -88,7 +97,7 @@ rm "$FILE"
 mkdir "gcc-${GCC_VER}/build"
 cd "gcc-${GCC_VER}/build"
 ../configure --prefix="$TOOLCHAIN_DIR" \
-             --enable-languages=c,c++ \
+             --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto \
              --with-gmp="$TOOLCHAIN_DIR" \
              --with-mpfr="$TOOLCHAIN_DIR" \
              --with-isl="$TOOLCHAIN_DIR" \
@@ -96,8 +105,19 @@ cd "gcc-${GCC_VER}/build"
              --disable-werror \
              --enable-clocale=gnu \
              --enable-shared \
+             --enable-bootstrap \
              --enable-threads=posix \
+             --enable-checking=release \
              --enable-__cxa_atexit \
+             --disable-libunwind-exceptions \
+             --enable-gnu-unique-object \
+             --enable-linker-build-id \
+             --with-linker-hash-style=gnu \
+             --enable-plugin \
+             --enable-initfini-array \
+             --disable-libgcj \
+             --enable-gnu-indirect-function \
+             --with-tune=generic \
              --disable-multilib
 
 make bootstrap
@@ -110,7 +130,13 @@ FILE="binutils-${BINUTILS_VER}.tar.bz2"
 curl "https://ftp.gnu.org/gnu/binutils/${FILE}" -o "$FILE"
 tar -xf "$FILE"
 cd "binutils-${BINUTILS_VER}"
-./configure --disable-debug --disable-dependency-tracking --prefix="$TOOLCHAIN_DIR" --with-gmp="$TOOLCHAIN_DIR" --with-mpfr="$TOOLCHAIN_DIR" --with-isl="${TOOLCHAIN_DIR}" --with-mpc="$TOOLCHAIN_DIR"
+./configure --disable-debug \
+            --disable-dependency-tracking \
+            --prefix="$TOOLCHAIN_DIR" \
+            --with-gmp="$TOOLCHAIN_DIR" \
+            --with-mpfr="$TOOLCHAIN_DIR" \
+            --with-isl="${TOOLCHAIN_DIR}" \
+            --with-mpc="$TOOLCHAIN_DIR"
 make
 make install
 cd ..

@@ -1,0 +1,9 @@
+FROM quay.io/pypa/manylinux1_x86_64
+MAINTAINER Junliang Shi
+SHELL ["/bin/bash", "-c"]
+COPY build_llvm.sh /tmp/
+COPY build_cmake.sh /tmp/
+ENV PATH="$PATH:/home/jshi/bin64/cmake-3.9.5/bin"
+RUN yum -y install xz \
+  && /tmp/build_cmake.sh \
+  && /tmp/build_llvm.sh
