@@ -110,13 +110,14 @@ cd "gcc-${GCC_VER}/build"
              --enable-checking=release \
              --enable-__cxa_atexit \
              --disable-libunwind-exceptions \
-             --enable-gnu-unique-object \
+             --disable-gnu-unique-object \
              --enable-linker-build-id \
              --with-linker-hash-style=gnu \
              --enable-plugin \
              --enable-initfini-array \
              --disable-libgcj \
              --enable-gnu-indirect-function \
+             --with-system-zlib \
              --with-tune=generic \
              --disable-multilib
 
